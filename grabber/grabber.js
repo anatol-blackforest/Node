@@ -32,7 +32,16 @@ let grabber = function(){
 	}).then(
 		result => {
 		  // первая функция-обработчик - запустится при вызове resolve
-		  fs.writeFile("news.json", JSON.stringify(result), setTimeout(grabber, 10000));
+		    fs.writeFile(
+			    "news.json",
+			    JSON.stringify(result),
+			    function(error) {
+			        if (error) {
+			            console.log(error);
+			        }
+			        setTimeout(grabber, 10000);
+			    }
+			);
 		},
 		error => {
 		  // вторая функция - запустится при вызове reject
