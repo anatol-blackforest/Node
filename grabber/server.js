@@ -1,59 +1,72 @@
 'use strict';
 
 const http = require("http");
+const fs = require("fs");
 
 let json, DOM;
 
-http.createServer(function(request, response) {
+try{
 
-    if(request){
+	http.createServer(function(request, response) {
 
-    	console.log("GO!");
+	    if(request){
 
-    	response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});
+	    	console.log("GO!");
 
-        json = require("./news.json");
+	    	response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});
 
-		DOM = "";
+	        fs.readFile("./news.json", function (err, data) {
 
-		json.forEach(function(item, i, arr){
-		    DOM += `
-		    <h2>${item.title}</h2>
-		    <p class="category">${item.category}</p>
-		    <p class="time">${item.time}</p> 
-		    <hr />
-		    `
-		})
+				if (err) throw err;
 
-	    response.write(`
+				json = JSON.parse(data.toString());
+	            DOM = "";
+				json.forEach(function(item, i, arr){
+				    DOM += `
+				    <h2><a href="${item.link}" target="_blank">${item.title}</a></h2>
+				    <p class="category">${item.category}</p>
+				    <p class="time">${item.time}</p> 
+				    <hr />
+				    `
+				})
 
-			<style>
-			*{
-				font-family: 'Comic Sans MS'
-			}
-			.category{
-	            font-size:14px;
-	            color:black
-			}
-			.time{
-	            font-size:13px;
-	            color:darkgrey;
-	            padding-bottom:12px
-			}
-			</style>
+	            response.write(`
 
-			<h1 style="font-family: 'Comic Sans MS'; font-size:72px; color:red; text-align:center">ТСН ВРАЖАЭ!</h1> 
-	        <hr />
+					<style>
+					*{
+						font-family: 'Comic Sans MS'
+					}
+					a{
+						color:black;
+						text-decoration:none;
+					}
+					.category{
+			            font-size:14px;
+			            color:black
+					}
+					.time{
+			            font-size:13px;
+			            color:darkgrey;
+			            padding-bottom:12px
+					}
+					</style>
 
-			${DOM}
+					<h1 style="font-family: 'Comic Sans MS'; font-size:72px; color:red; text-align:center">ТСН ВРАЖАЭ!</h1> 
+			        <hr />
 
-		`);
+					${DOM}
 
-        response.end();
+				`);
 
-    }
-    
+		        response.end();
 
-}).listen(80);
+			});
 
-    
+	    }
+	    
+
+	}).listen(8080);
+
+} catch (error){
+	console.log(`Пизданулось :(  ${error}`);
+}

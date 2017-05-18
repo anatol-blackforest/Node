@@ -16,14 +16,15 @@ let grabber = function(){
 		        jQuery = cheerio.load(data);
 				jQuery('.h-feed article').each(function(i, element){
 					jsonArr.push({
-						'title' : jQuery(this).find('h4').text(), 
+						'title' : jQuery(this).find('h4').text(),
+				        'link' : jQuery(this).find('h4 a').attr('href'), 
 						'category' : jQuery(this).find('.p-category').text(), 
 						'time' : jQuery(this).find('time').text(), 
 				    })
 				});
 				resolve(jsonArr);
 			}else{
-	               console.log(error);
+	               console.log(`Пизданулось :(  ${error}`);
 			}
 
 		});
@@ -31,7 +32,7 @@ let grabber = function(){
 	}).then(
 		result => {
 		  // первая функция-обработчик - запустится при вызове resolve
-		  fs.writeFile("news.json", JSON.stringify(result), grabber());
+		  fs.writeFile("news.json", JSON.stringify(result), setTimeout(grabber, 10000));
 		},
 		error => {
 		  // вторая функция - запустится при вызове reject
