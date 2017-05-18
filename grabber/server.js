@@ -9,7 +9,7 @@ try{
 
 	http.createServer(function(request, response) {
 
-	    if(request){
+	    if(request.url == "/"){
 
 	    	console.log("GO!");
 
