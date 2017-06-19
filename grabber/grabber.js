@@ -1,33 +1,38 @@
 'use strict';
 
-const http = require("http");
-const request = require('request');
+const https = require("https");
 const cheerio = require('cheerio');
 const fs = require('fs');
 
-let jQuery, jsonArr;
+let jQuery, jsonArr, data;
 
 let grabber = function(){
     new Promise((resolve, reject) => {
-	request.get('http://www.tsn.ua/', function (error, response, data) {
 
-			if (!error && response.statusCode == 200) {
-				jsonArr = [];
-		        jQuery = cheerio.load(data);
-				jQuery('.h-feed article').each(function(i, element){
-					jsonArr.push({
-						'title' : jQuery(this).find('h4').text(),
-				        'link' : jQuery(this).find('h4 a').attr('href'), 
-						'category' : jQuery(this).find('.p-category').text(), 
-						'time' : jQuery(this).find('time').text(), 
-				    })
+		https.get("https://tsn.ua/", (res) => {
+			if(res.statusCode == 200){
+				res.on('data', function (chunk) {
+					data += chunk;
 				});
-				resolve(jsonArr);
+				res.on('end', function () {
+                    jsonArr = [];
+					jQuery = cheerio.load(data);
+					jQuery('.h-feed article').each(function(i, element){
+						jsonArr.push({
+							'title' : jQuery(this).find('h4').text(),
+							'link' : jQuery(this).find('h4 a').attr('href'), 
+							'category' : jQuery(this).find('.p-category').text(), 
+							'time' : jQuery(this).find('time').text(), 
+						})
+					});
+					resolve(jsonArr);
+				});
 			}else{
-	               console.log(`Пизданулось :(  ${error}`);
+	               console.log(`Пизданулось :(`);
 			}
-
-		});
+		}).on("error", (error) => {
+			console.log(`Пизданулось :(  ${error.message}`);
+		})
 
 	}).then(
 		result => {
@@ -35,7 +40,7 @@ let grabber = function(){
 		    fs.writeFile(
 			    "news.json",
 			    JSON.stringify(result),
-			    function(error) {
+			    (error) => {
 			        if (error) {
 			            console.log(error);
 			        }
