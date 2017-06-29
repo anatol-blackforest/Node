@@ -94,7 +94,7 @@ app.route('/pets/:_id')
                             // критерий выборки
                             {_id}, 
                             // параметр обновления
-                            {$set: {pets: pets}}
+                            {$set: {pets}}
                         );
                     };
                 }).then(() => {
@@ -117,7 +117,28 @@ app.delete("/pets/:id/:arrNum", (req, res) => {
                 // критерий выборки
                 {_id}, 
                 // параметр обновления
-                {$set: {pets: pets}}
+                {$set: {pets}}
+            );
+        }).then(() => {
+            res.redirect(`/pets/${req.params._id}`);
+            db.close();
+        });
+    });
+});
+/* UPDATE  pet */
+app.put("/pets/:id/:arrNum/:petName", (req, res) => {
+    mongoClient.connect(url, (err, db) => {
+        if(err) return console.log(err);
+        let collection = db.collection('users');
+        let _id = ObjectId(req.params.id);
+        collection.findOne({_id}).then((info) => {
+            let pets = info.pets.slice();
+            pets[req.params.arrNum] = req.params.petName;
+            collection.findOneAndUpdate(
+                // критерий выборки
+                {_id}, 
+                // параметр обновления
+                {$set: {pets}}
             );
         }).then(() => {
             res.redirect(`/pets/${req.params._id}`);

@@ -9,6 +9,15 @@
   <title>Pets</title>
 </head>
 <body>
+  <div id="modal" class="modal hidden">
+		<div class="modal-window">
+			  <form id="pet-update" data-action="" action="/" method="post">
+          <p>Name</p>
+          <p><input type="text" name="name"></p>
+          <p><input type="submit" value="Обновить"></p>
+        </form>
+		</div>
+	</div>
   {{title}} of {{user.name}}<br /><br />
   <a href="/">back</a><br /><br />
   count = {{user.pets.length}}
@@ -27,7 +36,7 @@
           </tr>
           {% for item in user.pets %}
           <tr>
-              <td><a href="#" class="update" data-update="/pets/{{user._id}}/{{user.pets.indexOf(item)}}">{{item}}</span></td>
+              <td><a href="#" class="user" data-update="/pets/{{user._id}}/{{user.pets.indexOf(item)}}">{{item}}</span></td>
               <td><span class="del" data-id="/pets/{{user._id}}/{{user.pets.indexOf(item)}}/">x</span></td>
           </tr>
           {% endfor %}
